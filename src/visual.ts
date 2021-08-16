@@ -14,11 +14,22 @@ import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnume
 import * as L from 'leaflet';
 import * as tileLayers from "../tilelayers.json";
 import { VisualSettings } from "./settings";
+
+interface Plot {
+    tooltips: string;
+    latitude: number;
+    longitude: number;
+    color: string;
+    radius: number;
+}
+
 export class Visual implements IVisual {
     private target: HTMLElement;
     private settings: VisualSettings;
     private mapContainer: HTMLElement;
     private map: L.Map;
+    private plots: Plot[];
+    private markerLayer: L.LayerGroup<L.CircleMarker>;
 
     constructor(options: VisualConstructorOptions) {
         if (!document) { return; }
@@ -30,6 +41,8 @@ export class Visual implements IVisual {
     public update(options: VisualUpdateOptions) {
         this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
         this.resizeMap(options);
+        this.plots = <Plot[]>this.parseData(options);
+        this.drawMarkers();
     }
 
     public destroy() {
@@ -55,6 +68,33 @@ export class Visual implements IVisual {
         this.target.append(div);
     }
 
+    private drawMarkers() {
+        if (this.markerLayer) this.map.removeLayer(this.markerLayer);
+
+        const markers = this.plots.map(function ({tooltips, latitude, longitude, color, radius}) {
+            const latlng = L.latLng([latitude, longitude]);
+            const markerOptions: L.CircleMarkerOptions = { 
+                color: color || 'Black',
+                radius: radius || 10,
+                fillOpacity: 0.5
+            };
+            let marker = L.circleMarker(latlng, markerOptions);
+            marker.bindPopup(tooltips || '[Drag a field onto Tooltips]');
+            marker.on('mouseover', function (evt) {
+                marker.openPopup();
+            });
+            return marker;
+        });
+
+        // place markers on map
+        this.markerLayer = L.layerGroup(markers);
+        this.map.addLayer(this.markerLayer);
+
+        // zoom out so map shows all points
+        var group = L.featureGroup(markers);
+        this.map.fitBounds(group.getBounds());
+    }
+
     private getTileLayers(): string[] {
         if (window.location.host  === 'app.powerbi.com') {
             return tileLayers.dev;
@@ -63,6 +103,25 @@ export class Visual implements IVisual {
         } else if (window.location.host.includes('smil.mil')) {
             return tileLayers.sipr;
         }
+    }
+
+    private parseData(options: VisualUpdateOptions) {
+        /*
+            Data passed into the visual is based on dataRoles and dataviewMappings
+            https://github.com/woodbuffalo/powerbi-leaflet/blob/master/capabilities.json
+            Parsing logic is found in the converter() method:
+            https://github.com/woodbuffalo/powerbi-leaflet/blob/master/src/visual.ts
+        */
+        const { columns, rows } = options.dataViews[0].table;
+        const data = rows.map(function (row, idx) {
+            const item = row.reduce(function (d, v, i) {
+                const role = Object.keys(columns[i].roles)[0]
+                d[role] = v;
+                return d;
+            }, {});
+            return item;
+        });
+        return data;
     }
 
     private static parseSettings(dataView: DataView): VisualSettings {
