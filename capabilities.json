@@ -27,11 +27,11 @@
         }
     ],
     "objects": {
-        "dataPoint": {
-            "displayName": "Data colors",
+        "leafletMap": {
+            "displayName": "Leaflet Map Properties",
             "properties": {
                 "defaultColor": {
-                    "displayName": "Default color",
+                    "displayName": "Default color for marker",
                     "type": {
                         "fill": {
                             "solid": {
@@ -40,34 +40,10 @@
                         }
                     }
                 },
-                "showAllDataPoints": {
-                    "displayName": "Show all",
+                "zoomToFit": {
+                    "displayName": "Zoom map to fit data points",
                     "type": {
                         "bool": true
-                    }
-                },
-                "fill": {
-                    "displayName": "Fill",
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                },
-                "fillRule": {
-                    "displayName": "Color saturation",
-                    "type": {
-                        "fill": {}
-                    }
-                },
-                 "fontSize": {
-                    "displayName": "Text Size",
-                    "type": {
-                        "formatting": {
-                            "fontSize": true
-                        }
                     }
                 }
             }

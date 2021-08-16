@@ -71,10 +71,12 @@ export class Visual implements IVisual {
     private drawMarkers() {
         if (this.markerLayer) this.map.removeLayer(this.markerLayer);
 
+        const { zoomToFit, defaultColor } = this.settings.leafletMap;
+
         const markers = this.plots.map(function ({tooltips, latitude, longitude, color, radius}) {
             const latlng = L.latLng([latitude, longitude]);
             const markerOptions: L.CircleMarkerOptions = { 
-                color: color || 'Black',
+                color: color || (defaultColor || 'Black'),
                 radius: radius || 10,
                 fillOpacity: 0.5
             };
@@ -91,8 +93,10 @@ export class Visual implements IVisual {
         this.map.addLayer(this.markerLayer);
 
         // zoom out so map shows all points
-        var group = L.featureGroup(markers);
-        this.map.fitBounds(group.getBounds());
+        if (zoomToFit) {
+            var group = L.featureGroup(markers);
+            this.map.fitBounds(group.getBounds());
+        }
     }
 
     private getTileLayers(): string[] {
