@@ -2,3 +2,4 @@ dist
 node_modules
 .tmp
 webpack.statistics.dev.html
+tilelayers.json
