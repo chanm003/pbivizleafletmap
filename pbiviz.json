@@ -1,0 +1,25 @@
+{
+    "visual": {
+        "name": "pbivizleafletmap",
+        "displayName": "pbivizleafletmap",
+        "guid": "pbivizleafletmapA558A858067C4FBA82E42D28DD3F9275",
+        "visualClassName": "Visual",
+        "version": "1.0.0",
+        "description": "",
+        "supportUrl": "",
+        "gitHubUrl": ""
+    },
+    "apiVersion": "3.8.0",
+    "author": {
+        "name": "",
+        "email": ""
+    },
+    "assets": {
+        "icon": "assets/icon.png"
+    },
+    "externalJS": [],
+    "style": "style/visual.less",
+    "capabilities": "capabilities.json",
+    "dependencies": null,
+    "stringResources": []
+}
