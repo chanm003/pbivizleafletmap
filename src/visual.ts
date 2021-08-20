@@ -34,6 +34,7 @@ export class Visual implements IVisual {
     constructor(options: VisualConstructorOptions) {
         if (!document) { return; }
         this.target = options.element;
+        //this.target.innerHTML = 'TEST' + JSON.stringify(window.location);
         this.createMapContainer();
         this.configureLeaflet();
     }
@@ -100,13 +101,10 @@ export class Visual implements IVisual {
     }
 
     private getTileLayers(): string[] {
-        if (window.location.host  === 'app.powerbi.com') {
-            return tileLayers.dev;
-        } else if (window.location.host.includes('.mil')) {
-            return tileLayers.nipr;
-        } else if (window.location.host.includes('smil.mil')) {
-            return tileLayers.sipr;
-        }
+        let layers = tileLayers && 
+            tileLayers.currentTargetEnvironment && 
+            tileLayers.targetEnvironments[tileLayers.currentTargetEnvironment];
+        return layers || [];
     }
 
     private parseData(options: VisualUpdateOptions) {
